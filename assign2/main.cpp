@@ -13,8 +13,10 @@
 #include <set>
 #include <string>
 #include <unordered_set>
+#include <sstream>
+#include <vector>
 
-std::string kYourName = "STUDENT TODO"; // Don't forget to change this!
+std::string kYourName = "ZhongShuai Qin"; // Don't forget to change this!
 
 /**
  * Takes in a file name and returns a set containing all of the applicant names as a set.
@@ -29,7 +31,46 @@ std::string kYourName = "STUDENT TODO"; // Don't forget to change this!
  */
 std::set<std::string> get_applicants(std::string filename) {
   // STUDENT TODO: Implement this function.
+  std::set<std::string> res;
+  std::ifstream ifs(filename);
+  if(ifs.is_open())
+  {
+    std::string line;
+    while(std::getline(ifs, line))
+    {
+      res.insert(line);
+    }
+  }
+  return res;
 }
+
+bool isNameMatched(std::string name1, std::string name2) {
+  auto getParts = [](const std::string& name) {
+      std::vector<std::string> parts;
+      std::istringstream iss(name);
+      std::string part;
+      while (iss >> part) parts.push_back(part);
+      return parts;
+  };
+  
+  auto parts1 = getParts(name1);
+  auto parts2 = getParts(name2);
+  
+  if (parts1.empty() || parts2.empty()) return false;
+  
+  return parts1.front()[0] == parts2.front()[0] && 
+         parts1.back()[0] == parts2.back()[0];
+}
+
+// bool isNameMatched(std::string name1, std::string name2)
+// {
+//   std::istringstream iss1(name1);
+//   std::istringstream iss2(name2);
+//   std::string first_name1, last_name1, first_name2, last_name2;
+//   iss1 >> first_name1 >> last_name1;
+//   iss2 >> first_name2 >> last_name2;
+//   return first_name1[0] == first_name2[0] && last_name1[0] == last_name2[0];
+// }
 
 /**
  * Takes in a set of student names by reference and returns a queue of names
@@ -41,6 +82,15 @@ std::set<std::string> get_applicants(std::string filename) {
  */
 std::queue<const std::string*> find_matches(std::string name, std::set<std::string>& students) {
   // STUDENT TODO: Implement this function.
+  std::queue<const std::string*> q;
+  for(const auto& student: students)
+  {
+    if(isNameMatched(name, student))
+    {
+      q.push(&student);
+    }
+  }
+  return q;
 }
 
 /**
@@ -55,6 +105,14 @@ std::queue<const std::string*> find_matches(std::string name, std::set<std::stri
  */
 std::string get_match(std::queue<const std::string*>& matches) {
   // STUDENT TODO: Implement this function.
+  int size = matches.size();
+  if(size != 0)
+  {
+    return *matches.front();
+  }
+  if (matches.empty()) {
+    return "NO MATCHES FOUND.";
+  } 
 }
 
 /* #### Please don't remove this line! #### */

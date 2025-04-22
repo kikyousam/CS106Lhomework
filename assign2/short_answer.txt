@@ -6,6 +6,37 @@ Marriage Pact
 
 Q1. It is your choice to use either an ordered or unordered set. In a few sentences, what are some of the tradeoffs between the two? Additionally, please give an example (that has not been shown in lecture) of a valid hash function that could be used to hash student names for an unordered set.
 A1. TODO
+unordered set is more fast.
+有序集合（std::set）：
 
+优点：集合中的元素总是保持按顺序排列，因此可以轻松实现有序迭代。
+
+缺点：插入和查找操作的时间复杂度较高，为 $$O(\log n)$$，因为它使用平衡二叉树实现。
+
+无序集合（std::unordered_set）：
+
+优点：使用哈希表实现，插入和查找操作的时间复杂度平均为 $$O(1)$$。
+
+缺点：不保证元素顺序；在哈希冲突较多的情况下，性能可能退化。
+size_t hashName(const std::string& name) {
+    size_t hash = 0;
+    for (char c : name) {
+        hash = hash * 31 + c; // 使用31是因为它是一个常用的质数，可以减少哈希冲突
+    }
+    return hash;
+}
 Q2. Note that we are saving pointers to names in the queue, not names themselves. Why might this be desired in this problem? What happens if the original set where the names are stored goes out of scope and the pointers are referenced?
 A2. TODO
+保存指针的优势：
+
+减少内存使用：保存指针比保存名字本身占用更少的内存。指针的大小固定，而字符串大小取决于内容长度。
+
+提高效率：如果需要频繁访问或移动数据，操作指针比操作完整字符串更快，因为指针只需传递内存地址，而字符串需要复制整个内容。
+
+灵活性：指针可以直接引用原始数据，避免重复存储，从而保持数据的一致性。
+
+风险与后果：
+
+如果存储名字的原始集合超出作用域并被销毁，指针将变成悬空指针（dangling pointer），因为指针指向的内存已经被释放。一旦尝试引用这些指针，程序可能会导致未定义行为，包括崩溃或访问垃圾数据。
+
+为避免这种情况，可以确保原始集合的生命周期覆盖指针的使用范围，或者在集合销毁前将指针设置为nullptr以标记为无效。
