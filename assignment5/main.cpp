@@ -194,15 +194,48 @@ const std::unordered_map<std::string, std::function<void()>> test_functions = {
     {"comparable", test_comparable<User>}};
 
 int main(int argc, char* argv[]) {
-  if (argc == 2) {
-    if (test_functions.find(argv[1]) != test_functions.end()) {
-      test_functions.at(argv[1])();
-      return 0;
-    }
+  // if (argc == 2) {
+  //   if (test_functions.find(argv[1]) != test_functions.end()) {
+  //     test_functions.at(argv[1])();
+  //     return 0;
+  //   }
 
-    std::cerr << "Test '" << argv[1] << "' not found." << "\n";
-    return 1;
-  }
+  //   std::cerr << "Test '" << argv[1] << "' not found." << "\n";
+  //   return 1;
+  // }
 
-  return run_autograder();
+  // return run_autograder();
+  // User alice("Alice");
+  // alice.add_friend("Bob");
+
+  // User copyAlice = alice;  // 测试拷贝构造
+  // User newUser("Temp");
+  // newUser = alice;  // 测试拷贝赋值
+
+  // std::cout << copyAlice << std::endl;
+  // std::cout << newUser << std::endl;
+
+  // User alice("Alice");
+  // User charlie("Charlie");
+
+  // alice += charlie;
+  // std::cout << alice << std::endl;
+  // std::cout << charlie << std::endl;
+
+  
+  // Expected output:
+  // User(name=Alice, friends=[Charlie])
+  // User(name=Charlie, friends=[Alice])
+  User alice("Alice");
+  User charlie("Charlie");
+
+  if (alice < charlie)
+    std::cout << "Alice is less than Charlie";
+  else
+    std::cout << "Charlie is less than Alice";
+
+  // Expected output:
+  // Alice is less than Charlie
+  return 0;
+
 }

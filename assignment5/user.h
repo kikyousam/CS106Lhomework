@@ -8,6 +8,7 @@
 
 class User
 {
+  
 public:
   User(const std::string& name);
   void add_friend(const std::string& name);
@@ -19,6 +20,14 @@ public:
    * STUDENT TODO:
    * Your custom operators and special member functions will go here!
    */
+  friend std::ostream& operator<<(std::ostream& os, const User& user);
+  User& operator+=(User& rhs);
+  bool operator<(const User& rhs) const;
+  ~User();
+  User(const User& user);
+  User& operator=(const User& user);
+  User(const User&& user) = delete;
+  User& operator=(const User&& user) = delete;
 
 private:
   std::string _name;
