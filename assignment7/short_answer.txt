@@ -6,12 +6,34 @@ Unique Pointer
 
 Q1. List one or two benefits of using RAII to manage memory instead manually calling `new` and `delete`.
 A1. TODO
-
+1. 不需要担心在new 和 delete之间出现异常时，内存没有释放导致的内存泄漏。
+2. 增强代码的安全性和简洁性。避免半初始化和悬空指针的出现。
 Q2. When implementing move semantics for a `unique_ptr`, for example in the move constructor `unique_ptr(unique_ptr&& other)`, it is essential that we set the underlying pointer of the `other` parameter to `nullptr` before exiting the function. Explain in your own words what problem would arise if we did not.
 A2. TODO
+原来的 other 和新的 this 对象 都指向同一块动态分配的内存；
 
+当这两个 unique_ptr 变量先后析构时，就会重复调用 delete；
+
+这会导致 未定义行为（undefined behavior），最常见的是 程序崩溃、双重释放错误（double free）。
+If we don't set other's internal pointer to nullptr, both the moved-from object and the moved-to object will think they own the same memory. This leads to double deletion when both objects are destroyed, which causes undefined behavior. Setting the pointer to nullptr ensures only the new owner deletes the memory.
 Q3. This method of recursive deallocation through RAII works great for small lists, but may pose a problem for longer lists. Why? Hint: what is the limit for how "deep" a recursive function's call stack can grow?
 A3. TODO
+这个问题是在考察你对 RAII（资源获取即初始化）和递归调用机制的理解，结合当前作业中使用 `unique_ptr` 实现链表的方式来分析。
 
+在这个项目里，链表的每个节点通过 `unique_ptr` 持有对下一个节点的所有权。当链表头结点离开作用域时，它的析构函数被调用，从而触发下一个节点的析构，如此递归地释放整个链表的内存。这种方式优雅且安全地避免了手动调用 `delete` 的风险。
+
+但问题就在于：**这种递归释放的方式，每一次析构函数的调用都会压入一次函数调用栈帧（stack frame）**。也就是说，如果链表很长，比如成千上万个节点，那么析构函数会递归调用成千上万次，堆栈也会被不断加深。
+
+然而，**函数调用栈的深度是有限的**（通常在几千次到上万次之间，依赖于操作系统和编译器设置）。一旦链表长度超过这个限制，就可能触发栈溢出（stack overflow）错误，导致程序崩溃。
+
+所以，简单来说，这种递归清理链表内存的方式对于小规模的链表是非常合适的，但对大型链表来说风险较高，因为它可能突破调用栈的深度限制。
+
+如果你还想深入了解如何在不递归的情况下安全清理链表内存，也可以聊聊非递归的资源管理技巧，比如使用显式循环或手动控制析构流程。想试试优化这部分逻辑吗？
 Q4. What does `std::move` do in this context? Why is it safe to use `std::move` and move semantics here?
 A4. TODO
+这里使用移动赋值是为了将unique_ptr指针指向唯一的所有物，不会出现多个指针指向同一个对象的问题。
+Because you're explicitly constructing a new node in reverse list-building, and once you assign head into node->next, you no longer need the old head. After the move, head is left in a valid but “empty” state (usually set to nullptr), and the ownership continues cleanly down the new chain. The RAII principles are preserved — every node still gets destructed in order when the final list goes out of scope.
+
+So in short: std::move is what unlocks the power of unique ownership without copying, making this idiom not just safe, but central to modern C++ design.
+
+Want to explore what might go wrong if we didn’t use std::move here? Or peek at what the move constructor under the hood might look like?

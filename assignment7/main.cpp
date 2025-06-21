@@ -52,7 +52,25 @@ template <typename T> struct ListNode {
  */
 template <typename T> cs106l::unique_ptr<ListNode<T>> create_list(const std::vector<T>& values) {
   /* STUDENT TODO: Implement this method */
-  throw std::runtime_error("Not implemented: createList");
+  // cs106l::unique_ptr<ListNode<T>> dummy(0);
+  // cs106l::unique_ptr<ListNode<T>> prev = std::move(dummy);
+  // for(int i = 0; i < values.size(); ++i){
+  //   cs106l::unique_ptr<ListNode<T>> cur(values[i]);
+  //   prev->next = cur;
+  //   if(i == 0){
+  //     dummy = std::move(prev);
+  //   }
+  //   prev = std::move(cur);
+  // }
+  // return dummy->next;
+
+  cs106l::unique_ptr<ListNode<T>> head = nullptr;
+  for(int i = values.size()-1; i >= 0; --i){
+    auto node_ptr = cs106l::make_unique<ListNode<T>>(values[i]);
+    node_ptr->next = std::move(head);
+    head = std::move(node_ptr);
+  }
+  return head;
 }
 
 /**
